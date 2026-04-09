@@ -1,4 +1,2 @@
 # i210-Project
-Caitlynn - HTML, CSS
-Jacob - Javascript, Firebase, API, CSS
-Ben - Javascript, API
+https://docs.google.com/document/d/1Dzw6e8DMohhgdYUaGqepLbSjH5xCP5rWX5exdQzCBWI/edit?usp=sharing
