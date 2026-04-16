@@ -113,6 +113,12 @@ body {
   color: #111;
 }
 
+.logo-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 /* NAV */
 nav {
   border-bottom: 1px solid #ddd;
@@ -131,11 +137,32 @@ nav h1 {
   margin-left: 1rem;
   text-decoration: none;
   color: #111;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
 }
 
 .hero{
-  margin: 2rem 0;
+  margin: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-image {
+  width: 100%;
+  height: 600px;
+  display: block;
+  object-fit: cover;
+}
+
+.about {
+  padding: 0.75rem 2rem;
+  text-align: center;
+}
+
+.about p {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
 
 /* SECTIONS */
@@ -143,10 +170,25 @@ nav h1 {
   padding: 2rem;
 }
 
+.catalog-section {
+  padding: 1rem 0 0 0;
+  text-align: center;
+}
+
+.catalog-grid {
+  padding: 1rem 2rem;
+}
+
+.game-card a {
+  text-decoration: none;
+  color: #b41a06;
+  font-weight: 700;
+}
+
 /* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -200,3 +242,98 @@ input, textarea {
   color: #555;
 }
 
+.carousel-section {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.carousel-section h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.carousel {
+  overflow: hidden;
+  width: min(90vw, 1125px);
+  margin: 0 auto;
+}
+
+.wrap {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+  -webkit-animation: slide 18s linear infinite;
+  animation: slide 18s linear infinite;
+  will-change: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.carousel-item {
+  width: 200px;
+  margin-right: 25px;
+  flex: 0 0 auto;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.wrap img {
+  width: 200px;
+  height: 200px;
+  display: block;
+  border-radius: 10px;
+  object-fit: cover;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.carousel-label {
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@-webkit-keyframes slide {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(-2250px, 0, 0);
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-2250px, 0, 0);
+  }
+}
+
+footer {
+  padding: 1rem;
+  background: #111;
+  color: white;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.game-card {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 400px;
+}
