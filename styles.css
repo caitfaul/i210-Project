@@ -1,116 +1,15 @@
-.poppins-thin {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: normal;
-}
-
-.poppins-extralight {
-  font-family: "Poppins", sans-serif;
-  font-weight: 200;
-  font-style: normal;
-}
-
-.poppins-light {
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.poppins-regular {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.poppins-medium {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-}
-
-.poppins-semibold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-style: normal;
-}
-
-.poppins-bold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.poppins-extrabold {
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-style: normal;
-}
-
-.poppins-black {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-style: normal;
-}
-
-.poppins-thin-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.poppins-extralight-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 200;
-  font-style: italic;
-}
-
-.poppins-light-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.poppins-regular-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.poppins-medium-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.poppins-semibold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.poppins-bold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.poppins-extrabold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.poppins-black-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-style: italic;
-}
-
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
   background: #f6f6f6;
   color: #111;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+html {
+  height: 100%;
 }
 
 .logo-text {
@@ -219,26 +118,49 @@ nav h1 {
 form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-width: 400px;
+  gap: 1rem;
+  max-width: 600px;
 }
 
 input, textarea {
-  padding: 0.5rem;
+  padding: 0.85rem 1rem;
   border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 160px;
+  resize: vertical;
 }
 
 /* BUTTON */
 .btn {
-  padding: 0.5rem;
+  padding: 0.75rem 1.5rem;
   border: 1px solid #111;
   background: none;
+  color: #111;
   cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover {
+  background: #111;
+  color: #fff;
 }
 
 /* SMALL TEXT */
 .small {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: #555;
 }
 
@@ -258,7 +180,7 @@ input, textarea {
   margin: 0 auto;
 }
 
-.wrap {
+.carousel .wrap {
   display: flex;
   align-items: flex-start;
   width: max-content;
@@ -281,7 +203,7 @@ input, textarea {
   backface-visibility: hidden;
 }
 
-.wrap img {
+.carousel .wrap img {
   width: 200px;
   height: 200px;
   display: block;
@@ -324,7 +246,7 @@ footer {
   padding: 1rem;
   background: #111;
   color: white;
-  margin-top: 2rem;
+  margin-top: auto;
   text-align: center;
 }
 
@@ -334,6 +256,335 @@ footer {
   background: white;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   height: 400px;
+}
+
+.game-card .thumb-wrap {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 0.75rem;
+}
+
+.game-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.game-card .adult-thumb {
+  filter: blur(10px);
+}
+
+.game-card .adult-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: clamp(24px, 5vw, 40px);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.game-title {
+  margin: 0 0 0.5rem;
+}
+
+.game-desc {
+  margin: 0 0 0.5rem;
+  color: #333;
+  line-height: 1.4;
+}
+
+.game-meta {
+  margin: 0 0 0.75rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.game-card .view-entry {
+  margin-top: auto;
+  display: inline-block;
+}
+
+/* Search page (site theme) */
+.search-shell {
+  max-width: 960px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.search-shell .bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.search-shell .input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.search-shell .input-wrap input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.search-shell .clear-btn {
+  position: absolute;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 50%;
+  line-height: 1;
+  display: none;
+}
+
+.search-shell .clear-btn:hover {
+  color: #111;
+  background: #eee;
+}
+
+.search-shell input {
+  flex: 1;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+}
+
+.search-shell button,
+.search-shell .toggle-btn {
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-shell button:disabled,
+.search-shell .toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.search-shell .msg {
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.search-shell .msg.hidden {
+  display: none;
+}
+
+.search-shell .err {
+  border-color: #cf8f8f;
+  background: #fff4f4;
+  color: #8a1f1f;
+}
+
+.search-shell #results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .search-shell #results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .search-shell #results {
+    grid-template-columns: 1fr;
+  }
+}
+
+.search-shell .card {
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.search-shell .thumb-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.search-shell .card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.search-shell .adult-thumb {
+  filter: blur(10px);
+}
+
+.search-shell .adult-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: clamp(28px, 7vw, 52px);
+  font-weight: 700;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+.search-shell .card-body {
+  padding: 1rem;
+}
+
+.search-shell .card h3 {
+  margin: 0 0 0.5rem;
+}
+
+.search-shell .meta {
+  margin: 0 0 0.4rem;
+  color: #333;
+}
+
+.search-shell .card-actions {
+  margin-top: 0.75rem;
+}
+
+.search-shell .toggle-btn {
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  .search-shell .bar {
+    flex-direction: column;
+  }
+}
+
+/* Game details page */
+.details-section {
+  max-width: 1125px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.details-section .back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #b41a06;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.details-section .panel {
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.details-section .thumb-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.details-section .hero {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.details-section .adult-thumb {
+  filter: blur(12px);
+}
+
+.details-section .hero.adult-thumb {
+  filter: none;
+}
+
+.details-section .adult-badge {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: clamp(32px, 8vw, 64px);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.details-section .body {
+  padding: 2rem;
+}
+
+.details-section h1 {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+}
+
+.details-section .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.details-section .item {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.details-section .label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.details-section .value {
+  font-size: 1rem;
+  color: #111;
+  line-height: 1.5;
+}
+
+.details-section .desc {
+  margin-top: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.details-section .empty {
+  border: 1px solid #ddd;
+  background: #fafafa;
+  color: #666;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
 }
