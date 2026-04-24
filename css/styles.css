@@ -329,6 +329,36 @@ footer {
   margin-bottom: 0;
 }
 
+.catalog-shell #gameContainer .favorite-star {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.catalog-shell #gameContainer .favorite-star:hover {
+  transform: scale(1.06);
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.catalog-shell #gameContainer .favorite-star.active {
+  color: #ffd84d;
+  border-color: rgba(255, 216, 77, 0.85);
+}
+
 .catalog-shell #gameContainer .game-title,
 .catalog-shell #gameContainer .game-desc,
 .catalog-shell #gameContainer .game-meta,
@@ -368,6 +398,13 @@ footer {
 
 .catalog-shell #gameContainer .view-entry:hover {
   opacity: 0.92;
+}
+
+.catalog-shell .catalog-load-more {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+  padding: 0.75rem 0 1.25rem;
 }
 
 @media (max-width: 900px) {
