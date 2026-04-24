@@ -1,17 +1,43 @@
+// API configuration and simple session request guard.
 const API_KEY = "8d195865436943f4a5ac7e55e21f9a7b";
 const API_BASE_URL = "https://api.gamebrain.co/v1";
 const REQUEST_LIMIT = 10;
 const SEARCH_STORAGE_KEY = "gamebrain:lastSearch";
 
+// DOM references for search controls and render targets.
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 const clearButton = document.getElementById("clearButton");
 const resultsDiv = document.getElementById("results");
 const messageDiv = document.getElementById("message");
 
+// Firebase configuration used for shared favorites data.
+const firebaseConfig = {
+  apiKey: "AIzaSyBsFT1xZf_IgcfnBWIfh7Tt8jfRr-RZN4Q",
+  authDomain: "my-team-project-8b98c.firebaseapp.com",
+  databaseURL: "https://my-team-project-8b98c-default-rtdb.firebaseio.com",
+  projectId: "my-team-project-8b98c",
+  storageBucket: "my-team-project-8b98c.firebasestorage.app",
+  messagingSenderId: "327995312132",
+  appId: "1:327995312132:web:3dbd51c0e3c54ce33e8d51",
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const database = firebase.database();
+const favoritesRef = database.ref("favorites");
+
+// Runtime state for favorites + current rendered results.
+let favoriteIds = new Set();
+let currentResults = [];
+
+// Lightweight in-memory search cache and request counter.
 const cache = new Map();
 let requestCount = 0;
 
+// Persists the current search input between page visits.
 function saveSearchQuery(value) {
   try {
     localStorage.setItem(SEARCH_STORAGE_KEY, value);
@@ -20,6 +46,7 @@ function saveSearchQuery(value) {
   }
 }
 
+// Restores the last search string from localStorage.
 function restoreSearchQuery() {
   try {
     const saved = localStorage.getItem(SEARCH_STORAGE_KEY);
@@ -31,20 +58,23 @@ function restoreSearchQuery() {
   }
 }
 
+// Shows a status/error message in the shared message box.
 function setMessage(text, error = false) {
   messageDiv.classList.remove("hidden");
   messageDiv.className = error ? "msg err" : "msg";
   messageDiv.textContent = text;
 }
 
+// Hides the status message region.
 function clearMessage() {
   messageDiv.classList.add("hidden");
 }
 
+// Converts platform arrays/objects to display text.
 function platformText(game) {
   const platforms = [
     ...(Array.isArray(game.platforms) ? game.platforms : []),
-    ...(Array.isArray(game.platform) ? game.platform : [game.platform]),
+    ...(Array.isArray(game.platform) ? game.platform : game.platform ? [game.platform] : []),
   ]
     .map((p) => {
       if (!p) return "";
@@ -57,20 +87,24 @@ function platformText(game) {
   return unique.length ? unique.join(", ") : "Unknown";
 }
 
+// Formats rating display text.
 function scoreText(game) {
   return typeof game?.rating?.mean === "number"
     ? `${(game.rating.mean * 10).toFixed(1)}/10`
     : "N/A";
 }
 
+// Returns a stable identifier from multiple possible API keys.
 function getGameId(game) {
   return game.id || game.game_id || game._id || game.slug || game.name;
 }
 
+// Normalizes API boolean-like values.
 function toBool(value) {
   return value === true || value === 1 || value === "1" || value === "true";
 }
 
+// Fast adult detection using common API tag shapes.
 function hasAdultOnlyTag(game) {
   // Most direct shapes from API responses
   if (toBool(game?.tag?.adult_only)) return true;
@@ -89,12 +123,11 @@ function hasAdultOnlyTag(game) {
   return false;
 }
 
+// Broader adult detection fallback for inconsistent payloads.
 function isAdultGame(game) {
   if (hasAdultOnlyTag(game)) return true;
 
-  const directFlags = [game.adult, game.nsfw, game.is_adult, game.isAdult].some(
-    (value) => value === true || value === 1 || value === "true",
-  );
+  const directFlags = [game.adult, game.nsfw, game.is_adult, game.isAdult].some(toBool);
 
   if (directFlags) return true;
 
@@ -129,12 +162,14 @@ function isAdultGame(game) {
   return /(adult|erotic|hentai|nsfw|porn|sexual)/i.test(genres);
 }
 
+// Normalizes whitespace for description text candidates.
 function sanitizeText(value) {
   return String(value || "")
     .replace(/\s+/g, " ")
     .trim();
 }
 
+// Recursively finds potentially useful description strings in payloads.
 function findDescriptionCandidate(input, depth = 0) {
   if (!input || depth > 4) return "";
 
@@ -168,31 +203,36 @@ function findDescriptionCandidate(input, depth = 0) {
   return "";
 }
 
+// Packages selected game data so details page has robust fallback fields.
 function buildTemplateGameData(game) {
   const shortDescription = sanitizeText(
     game.short_description || game["short description"] || game.shortDescription,
   );
-  const longDescription = sanitizeText(
-    game.description || game.summary || game.overview || game.synopsis,
-  );
-  const discoveredDescription = findDescriptionCandidate(game);
+  const longDescription =
+    sanitizeText(game.description || game.summary || game.overview || game.synopsis) ||
+    findDescriptionCandidate(game);
 
   return {
     ...game,
     template_adult_only: hasAdultOnlyTag(game),
     template_short_description: shortDescription,
     template_description: longDescription,
-    template_discovered_description: discoveredDescription,
   };
 }
 
+// Saves selected card state and navigates to the details page.
 function openGameTemplate(game) {
   const gameId = getGameId(game);
   const templateGame = buildTemplateGameData(game);
   sessionStorage.setItem("selectedGame", JSON.stringify(templateGame));
-  window.location.href = `gamedetails.html?id=${encodeURIComponent(gameId)}`;
+
+  const params = new URLSearchParams();
+  params.set("id", String(gameId || ""));
+  params.set("from", "search");
+  window.location.href = `gamedetails.html?${params.toString()}`;
 }
 
+// Renders all result cards and wires details/favorite interactions.
 function renderResults(games) {
   resultsDiv.innerHTML = "";
 
@@ -207,11 +247,22 @@ function renderResults(games) {
     const card = document.createElement("article");
     card.className = "card";
     const adult = isAdultGame(game);
+    const id = String(getGameId(game));
+    const isFavorite = favoriteIds.has(id);
 
     const image = game.image || "https://via.placeholder.com/600x340?text=No+Image";
     const release = game.release_date || game.year || "TBA";
     card.innerHTML = `
       <div class="thumb-wrap">
+        <button
+          class="favorite-star ${isFavorite ? "active" : ""}"
+          type="button"
+          aria-label="${isFavorite ? "Remove from favorites" : "Add to favorites"}"
+          aria-pressed="${isFavorite ? "true" : "false"}"
+          title="${isFavorite ? "Remove from favorites" : "Add to favorites"}"
+        >
+          ${isFavorite ? "★" : "☆"}
+        </button>
         <img
           src="${image}"
           alt="${game.name || "Game"}"
@@ -232,12 +283,50 @@ function renderResults(games) {
     `;
 
     const toggleBtn = card.querySelector(".toggle-btn");
+    const starBtn = card.querySelector(".favorite-star");
     toggleBtn.addEventListener("click", () => openGameTemplate(game));
+    setStarState(starBtn, isFavorite);
+
+    starBtn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+
+      const gameId = String(getGameId(game));
+      const nowFavorite = !favoriteIds.has(gameId);
+
+      try {
+        if (nowFavorite) {
+          await saveFavoriteToFirebase(game);
+          favoriteIds.add(gameId);
+        } else {
+          await removeFavoriteFromFirebase(game);
+          favoriteIds.delete(gameId);
+        }
+
+        setStarState(starBtn, nowFavorite);
+      } catch {
+        setMessage("Could not update favorites right now.", true);
+      }
+    });
 
     resultsDiv.appendChild(card);
   });
 }
 
+// Keeps in-page favorite stars synchronized with Firebase changes.
+favoritesRef.on("value", (snapshot) => {
+  const value = snapshot.val() || {};
+  favoriteIds = new Set(
+    Object.values(value)
+      .map((entry) => String(entry?.gameId || ""))
+      .filter(Boolean),
+  );
+
+  if (currentResults.length) {
+    renderResults(currentResults);
+  }
+});
+
+// Builds the search endpoint URL for a query.
 function buildSearchURL(query) {
   const params = new URLSearchParams();
   params.append("query", query);
@@ -245,6 +334,7 @@ function buildSearchURL(query) {
   return `${API_BASE_URL}/games?${params.toString()}`;
 }
 
+// Maps HTTP status codes to user-friendly errors.
 function httpErrorText(status) {
   if (status === 401 || status === 403) return "API key/auth issue (401/403).";
   if (status === 402) return "Plan limit reached for this endpoint (402).";
@@ -252,6 +342,7 @@ function httpErrorText(status) {
   return `Request failed (${status}).`;
 }
 
+// Executes search request flow: validation, cache, fetch, and rendering.
 async function searchGames() {
   const query = searchInput.value.trim();
 
@@ -269,7 +360,9 @@ async function searchGames() {
   saveSearchQuery(query);
 
   if (cache.has(key)) {
-    renderResults(cache.get(key));
+    const cachedGames = cache.get(key);
+    currentResults = cachedGames;
+    renderResults(cachedGames);
     return;
   }
 
@@ -302,6 +395,7 @@ async function searchGames() {
     const data = await response.json();
     const games = Array.isArray(data.results) ? data.results : [];
     cache.set(key, games);
+    currentResults = games;
     renderResults(games);
   } catch {
     setMessage("Network error. Check your connection and try again.", true);
@@ -310,6 +404,52 @@ async function searchGames() {
   }
 }
 
+// Uses encoded game ID as Firebase key-safe path segment.
+function favoriteKey(game) {
+  return encodeURIComponent(String(getGameId(game)));
+}
+
+// Updates favorite star visual state and accessibility attributes.
+function setStarState(starBtn, isFavorite) {
+  starBtn.classList.toggle("active", isFavorite);
+  starBtn.textContent = isFavorite ? "★" : "☆";
+  starBtn.setAttribute(
+    "aria-label",
+    isFavorite ? "Remove from favorites" : "Add to favorites",
+  );
+  starBtn.setAttribute(
+    "title",
+    isFavorite ? "Remove from favorites" : "Add to favorites",
+  );
+  starBtn.setAttribute("aria-pressed", isFavorite ? "true" : "false");
+}
+
+// Writes favorite card metadata to Firebase.
+async function saveFavoriteToFirebase(game) {
+  const key = favoriteKey(game);
+  await favoritesRef.child(key).set({
+    gameId: String(getGameId(game)),
+    favoritedAt: Date.now(),
+    cached: {
+      id: String(getGameId(game)),
+      title: game.name || "Untitled Game",
+      genre: Array.isArray(game.genres)
+        ? game.genres.map((g) => (typeof g === "string" ? g : g?.name || "")).filter(Boolean).join(", ")
+        : game.genre || "Unknown",
+      platform: platformText(game),
+      imageUrl: game.image || "",
+      rating: typeof game?.rating?.mean === "number" ? (game.rating.mean * 10).toFixed(1) : null,
+    },
+  });
+}
+
+// Removes favorite entry from Firebase.
+async function removeFavoriteFromFirebase(game) {
+  const key = favoriteKey(game);
+  await favoritesRef.child(key).remove();
+}
+
+// Event wiring for search, clear, and keyboard interactions.
 searchButton.addEventListener("click", searchGames);
 searchInput.addEventListener("input", () => {
   saveSearchQuery(searchInput.value);
@@ -328,5 +468,5 @@ clearButton.addEventListener("click", () => {
 });
 
 restoreSearchQuery();
-if (searchInput.value) clearButton.style.display = "block";
+clearButton.style.display = searchInput.value ? "block" : "none";
 setMessage("Ready. Search by game title or platform keyword.");

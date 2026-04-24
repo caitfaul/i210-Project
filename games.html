@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Catalog page layout:
+  - Shared navigation
+  - Catalog heading
+  - Game grid container rendered by games.js
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,6 +20,7 @@
     />
   </head>
   <body>
+    <!-- Shared top navigation -->
     <nav>
       <div class="logo-container">
         <img src="images/logo.svg" alt="The Game Archive Logo" class="logo" />
@@ -22,25 +29,29 @@
 
       <div class="links">
         <a href="index.html">Home</a>
-        <a href="#">Catalog</a>
+        <a href="games.html" aria-current="page">Catalog</a>
         <a href="search.html">Search Games</a>
         <a href="favorites.html">Favorites</a>
         <a href="contact.html">Contact</a>
       </div>
     </nav>
 
+    <!-- Page heading and short context text -->
     <section class="catalog-section">
       <h2>Game Catalog</h2>
       <p>Browse all archived entries.</p>
     </section>
 
-    <!-- GAME GRID (API data will populate this section) -->
-    <section class="catalog-grid">
+    <!-- Game grid (API data is injected by games.js) -->
+    <section class="catalog-grid catalog-shell">
       <div class="grid" id="gameContainer"></div>
     </section>
+    <!-- Shared footer -->
     <footer>
       <p class="footer">Made by Caitlynn Faulkner, Jacob Fox, and Ben Fox</p>
     </footer>
+    <!-- Shared adult-mask toggle + catalog rendering logic -->
+    <script src="adult-toggle.js"></script>
     <script src="games.js"></script>
   </body>
 </html>

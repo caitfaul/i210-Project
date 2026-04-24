@@ -1,9 +1,12 @@
+// API configuration for catalog page requests.
 const API_KEY = "8d195865436943f4a5ac7e55e21f9a7b";
 const API_BASE_URL = "https://api.gamebrain.co/v1";
 const CATALOG_COUNT = 20;
 
+// Root container where catalog cards are rendered.
 const gameContainer = document.getElementById("gameContainer");
 
+// Formats API score from 0-1 scale to user-friendly 0-10 scale.
 function scoreText(game) {
   return typeof game?.rating?.mean === "number"
     ? `${(game.rating.mean * 10).toFixed(1)}/10`
@@ -18,6 +21,7 @@ function gameName(game) {
   return String(game?.name || "").trim() || "Untitled Game";
 }
 
+// Chooses the primary platform text for a card.
 function platformText(game) {
   const list = [
     ...(Array.isArray(game.platforms) ? game.platforms : []),
@@ -31,9 +35,11 @@ function platformText(game) {
     .filter(Boolean);
 
   const unique = [...new Set(list)];
-  return unique.length ? unique.join(", ") : "Unknown";
+  // Show only the first platform; fall back to genre from list endpoint
+  return unique.length ? unique[0] : (sanitizeText(game.genre) || "Unknown");
 }
 
+// Sanitizes incoming text fields from the API payload.
 function sanitizeText(value) {
   return String(value || "")
     .replace(/<[^>]*>/g, " ")
@@ -41,6 +47,7 @@ function sanitizeText(value) {
     .trim();
 }
 
+// Recursively scans game payloads to discover a description-like value.
 function findDescriptionCandidate(input, depth = 0) {
   if (!input || depth > 4) return "";
 
@@ -74,25 +81,12 @@ function findDescriptionCandidate(input, depth = 0) {
   return "";
 }
 
-function shortDescription(game) {
-  const direct = sanitizeText(
-    game.short_description || game.shortDescription || game.summary || game.description,
-  );
-
-  if (direct) return direct.slice(0, 140) + (direct.length > 140 ? "…" : "");
-
-  const discovered = findDescriptionCandidate(game);
-  if (discovered) {
-    return discovered.slice(0, 140) + (discovered.length > 140 ? "…" : "");
-  }
-
-  return "No description available.";
-}
-
+// Utility used for handling API boolean-like values.
 function toBool(value) {
   return value === true || value === 1 || value === "1" || value === "true";
 }
 
+// Detects whether a game should be marked as adult-only.
 function isAdultGame(game) {
   if (toBool(game?.tag?.adult_only)) return true;
   if (toBool(game?.adult_only)) return true;
@@ -108,6 +102,7 @@ function isAdultGame(game) {
   return false;
 }
 
+// Stores extra template fields used by the details page fallback behavior.
 function buildTemplateGameData(game) {
   return {
     ...game,
@@ -121,6 +116,7 @@ function buildTemplateGameData(game) {
   };
 }
 
+// Persists selected game data to session storage before navigation.
 function saveSelectedGame(game) {
   try {
     sessionStorage.setItem("selectedGame", JSON.stringify(buildTemplateGameData(game)));
@@ -129,6 +125,7 @@ function saveSelectedGame(game) {
   }
 }
 
+// Removes duplicate game entries by a normalized identifier.
 function uniqueById(games) {
   const seen = new Set();
   const output = [];
@@ -143,6 +140,7 @@ function uniqueById(games) {
   return output;
 }
 
+// Fetches catalog entries with multiple sort parameter fallbacks.
 async function fetchCatalogGames() {
   const paramSets = [
     { limit: String(CATALOG_COUNT), sort: "-rating.count" },
@@ -175,6 +173,7 @@ async function fetchCatalogGames() {
   return [];
 }
 
+// Builds one catalog card and wires the "View Entry" action.
 function renderCard(game) {
   const card = document.createElement("article");
   card.className = "game-card";
@@ -182,7 +181,7 @@ function renderCard(game) {
   const id = encodeURIComponent(String(gameId(game) || ""));
   const name = gameName(game);
   const image = game.image || "https://via.placeholder.com/400x200?text=No+Image";
-  const linkHref = `gamedetails.html?id=${id}`;
+  const linkHref = `gamedetails.html?id=${id}&from=games`;
   const adult = isAdultGame(game);
 
   card.innerHTML = `
@@ -191,7 +190,6 @@ function renderCard(game) {
       ${adult ? '<span class="adult-badge">18+</span>' : ""}
     </div>
     <h3 class="game-title">${name}</h3>
-    <p class="game-desc">${shortDescription(game)}</p>
     <p class="game-meta">Platform: ${platformText(game)} | Rating: ${scoreText(game)}</p>
     <a href="${linkHref}" class="view-entry">View Entry</a>
   `;
@@ -202,10 +200,12 @@ function renderCard(game) {
   return card;
 }
 
+// Displays a simple error card in the catalog container.
 function renderError(text) {
   gameContainer.innerHTML = `<div class="card">${text}</div>`;
 }
 
+// Main page bootstrap: load, render, and handle empty/error states.
 async function initCatalog() {
   if (!gameContainer) return;
 
@@ -221,4 +221,5 @@ async function initCatalog() {
   games.forEach((game) => gameContainer.appendChild(renderCard(game)));
 }
 
+// Start catalog page behavior on script load.
 initCatalog();

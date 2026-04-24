@@ -1,4 +1,11 @@
 <!doctype html>
+<!--
+  Home page layout:
+  - Shared site navigation
+  - Hero banner
+  - About text
+  - Featured games carousel populated by index.js
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,6 +22,7 @@
   </head>
 
   <body>
+    <!-- Shared top navigation -->
     <nav>
       <div class="logo-container">
         <img src="images/logo.svg" alt="The Game Archive Logo" class="logo" />
@@ -22,7 +30,7 @@
       </div>
 
       <div class="links">
-        <a href="#">Home</a>
+        <a href="index.html" aria-current="page">Home</a>
         <a href="games.html">Catalog</a>
         <a href="search.html">Search Games</a>
         <a href="favorites.html">Favorites</a>
@@ -30,12 +38,16 @@
       </div>
     </nav>
 
-    <!-- HERO IMAGE PLACEHOLDER -->
+    <!-- Visual hero banner for the landing page -->
     <div class="hero">
-      <img class="hero-image" src="images/hero.png" alt="hero" />
+      <img
+        class="hero-image"
+        src="images/hero.png"
+        alt="Game library hero banner"
+      />
     </div>
 
-    <!-- ABOUT -->
+    <!-- Introductory description of the project -->
     <section class="about">
       <h2>About the Archive</h2>
       <p>
@@ -45,100 +57,27 @@
       </p>
     </section>
 
-    <!-- GAME CAROUSEL PLACEHOLDER (WILL USE API DATA)-->
+    <!-- Featured games carousel (dynamic content injected by JavaScript) -->
     <section class="carousel-section">
       <h2>Featured Games</h2>
 
       <div class="carousel">
-        <div class="wrap">
+        <div class="wrap" aria-live="polite">
           <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 1</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 2</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 3</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 4</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 5</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 6</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 7</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 8</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 9</p>
-          </div>
-          <div class="carousel-item">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 10</p>
-          </div>
-
-          <!-- DUPLICATED FOR SEAMLESS LOOPING -->
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 1</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 2</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 3</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 4</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 5</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 6</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 7</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 8</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 9</p>
-          </div>
-          <div class="carousel-item" aria-hidden="true">
-            <img src="images/placeholder-200.png" alt="" />
-            <p class="carousel-label">Game 10</p>
+            <img
+              src="images/placeholder-200.png"
+              alt="Loading featured games"
+            />
+            <p class="carousel-label">Loading featured games...</p>
           </div>
         </div>
       </div>
     </section>
+    <!-- Shared footer -->
     <footer>
       <p class="footer">Made by Caitlynn Faulkner, Jacob Fox, and Ben Fox</p>
     </footer>
+    <!-- Home page behavior (fetch + render featured games) -->
     <script src="index.js"></script>
   </body>
 </html>

@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Search page layout:
+  - Shared navigation
+  - Search controls
+  - Message area and result grid managed by search.js
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,6 +21,7 @@
   </head>
 
   <body>
+    <!-- Shared top navigation -->
     <nav>
       <div class="logo-container">
         <img src="images/logo.svg" alt="The Game Archive Logo" class="logo" />
@@ -24,17 +31,19 @@
       <div class="links">
         <a href="index.html">Home</a>
         <a href="games.html">Catalog</a>
-        <a href="#">Search Games</a>
+        <a href="search.html" aria-current="page">Search Games</a>
         <a href="favorites.html">Favorites</a>
         <a href="contact.html">Contact</a>
       </div>
     </nav>
 
+    <!-- Search page heading -->
     <section class="catalog-section">
       <h2>Search Games</h2>
       <p>Find games by title, platform, or keyword.</p>
     </section>
 
+    <!-- Search controls + dynamic results -->
     <section class="search-shell">
       <div class="bar">
         <div class="input-wrap">
@@ -53,10 +62,15 @@
       <div id="results"></div>
     </section>
 
+    <!-- Shared footer -->
     <footer>
       <p class="footer">Made by Caitlynn Faulkner, Jacob Fox, and Ben Fox</p>
     </footer>
-
+    <!-- Firebase SDKs used for favorites star state -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Shared adult-mask toggle + search logic -->
+    <script src="adult-toggle.js"></script>
     <script src="search.js"></script>
   </body>
 </html>

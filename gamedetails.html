@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  Game details page layout:
+  - Shared navigation
+  - Back link controlled by gamedetails.js
+  - Details panel content injected by JavaScript
+-->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,6 +21,7 @@
   </head>
 
   <body>
+    <!-- Shared top navigation -->
     <nav>
       <div class="logo-container">
         <img src="images/logo.svg" alt="The Game Archive Logo" class="logo" />
@@ -30,19 +37,24 @@
       </div>
     </nav>
 
+    <!-- Page title -->
     <section class="catalog-section">
       <h2>Game Details</h2>
     </section>
 
+    <!-- Dynamic game details target -->
     <section class="details-section">
       <a href="search.html" class="back">← Back</a>
       <div id="content"></div>
     </section>
 
+    <!-- Shared footer -->
     <footer>
       <p class="footer">Made by Caitlynn Faulkner, Jacob Fox, and Ben Fox</p>
     </footer>
 
+    <!-- Shared adult-mask toggle + details loading logic -->
+    <script src="adult-toggle.js"></script>
     <script src="gamedetails.js"></script>
   </body>
 </html>
