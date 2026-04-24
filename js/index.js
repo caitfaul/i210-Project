@@ -1,6 +1,8 @@
+// API configuration used for fetching featured games.
 const API_KEY = "8d195865436943f4a5ac7e55e21f9a7b";
 const API_BASE_URL = "https://api.gamebrain.co/v1";
 
+// Fallback keyword pool used when direct popularity sort is unavailable.
 const POPULAR_FALLBACK_QUERIES = [
   "action",
   "adventure",
@@ -15,6 +17,7 @@ const POPULAR_FALLBACK_QUERIES = [
 ];
 const TARGET_COUNT = 10;
 
+// Escapes dynamic text before insertion into HTML strings.
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -38,6 +41,7 @@ function gameImage(game) {
   return image || "https://via.placeholder.com/200x200?text=No+Image";
 }
 
+// Performs one API search query and returns the normalized results array.
 async function fetchGamesByQuery(query) {
   const params = new URLSearchParams();
   params.append("query", query);
@@ -66,6 +70,7 @@ function ratingMean(game) {
   return Number(game?.rating?.mean) || 0;
 }
 
+// Combined ranking metric for featured ordering.
 function popularityScore(game) {
   // Prioritize volume of ratings, then average score.
   return ratingCount(game) * 100 + ratingMean(game);
@@ -88,6 +93,7 @@ function dedupeGames(games) {
   return unique;
 }
 
+// Attempts several API sort modes to fetch popular games directly.
 async function fetchPopularFromApi() {
   const sortParamSets = [
     { limit: "50", sort: "-popularity" },
@@ -128,6 +134,7 @@ async function fetchPopularFromApi() {
   return [];
 }
 
+// Fallback strategy: query multiple genres and rank results locally.
 async function fetchPopularFallback() {
   const pool = [];
 
@@ -148,6 +155,7 @@ async function fetchPopularFallback() {
     .slice(0, TARGET_COUNT);
 }
 
+// Entry fetch strategy: direct popular endpoint first, fallback second.
 async function fetchFeaturedGames() {
   const direct = await fetchPopularFromApi();
   if (direct.length) return direct;
@@ -155,6 +163,7 @@ async function fetchFeaturedGames() {
   return fetchPopularFallback();
 }
 
+// Builds one carousel card HTML block.
 function buildCarouselItem(game, ariaHidden = false) {
   const image = escapeHtml(gameImage(game));
   const name = escapeHtml(gameName(game));
@@ -167,6 +176,7 @@ function buildCarouselItem(game, ariaHidden = false) {
   `;
 }
 
+// Renders the featured carousel and duplicates the set for seamless scrolling.
 async function initFeaturedCarousel() {
   const wrap = document.querySelector(".carousel .wrap");
   if (!wrap) return;
@@ -180,4 +190,5 @@ async function initFeaturedCarousel() {
   wrap.innerHTML = `${firstSet}${duplicateSet}`;
 }
 
+// Initialize featured carousel behavior when script loads.
 initFeaturedCarousel();

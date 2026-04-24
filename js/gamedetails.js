@@ -1,12 +1,40 @@
+// API configuration for game detail lookups.
 const API_KEY = "8d195865436943f4a5ac7e55e21f9a7b";
 const API_BASE_URL = "https://api.gamebrain.co/v1";
 
+// Determines the best back destination based on query params/referrer.
+function resolveBackHref() {
+  const from = new URLSearchParams(window.location.search).get("from");
+  if (from === "search") return "search.html";
+  if (from === "games" || from === "catalog") return "games.html";
+
+  try {
+    const ref = new URL(document.referrer);
+    if (ref.origin === window.location.origin && ref.pathname.endsWith("search.html")) {
+      return "search.html";
+    }
+  } catch {
+    // Ignore invalid referrer.
+  }
+
+  return "games.html";
+}
+
+// Applies computed destination to the back link in the page header.
+function setupBackLink() {
+  const backLink = document.querySelector(".back");
+  if (!backLink) return;
+  backLink.setAttribute("href", resolveBackHref());
+}
+
+// Formats rating display text.
 function scoreText(game) {
   return typeof game?.rating?.mean === "number"
     ? `${(game.rating.mean * 10).toFixed(1)}/10`
     : "N/A";
 }
 
+// Converts platform payload shapes into readable text.
 function platformText(game) {
   const list = [
     ...(Array.isArray(game.platforms) ? game.platforms : []),
@@ -23,6 +51,7 @@ function platformText(game) {
   return unique.length ? unique.join(", ") : "Unknown";
 }
 
+// Extracts and normalizes genre names from multiple possible payload shapes.
 function genresText(game) {
   const collected = [];
 
@@ -41,14 +70,17 @@ function genresText(game) {
   return unique.length ? unique.join(", ") : "Unknown";
 }
 
+// Returns a stable ID across API response variants.
 function getGameId(game) {
   return game?.id || game?.game_id || game?._id || game?.slug || game?.name;
 }
 
+// Normalizes boolean-like values from mixed data types.
 function toBool(value) {
   return value === true || value === 1 || value === "1" || value === "true";
 }
 
+// Determines whether content should receive adult-only masking.
 function isAdultGame(game) {
   if (toBool(game?.template_adult_only)) return true;
   if (toBool(game?.tag?.adult_only)) return true;
@@ -65,6 +97,7 @@ function isAdultGame(game) {
   return false;
 }
 
+// Sanitizes potential description strings.
 function sanitizeText(value) {
   return String(value || "")
     .replace(/<[^>]*>/g, " ")
@@ -73,6 +106,7 @@ function sanitizeText(value) {
     .trim();
 }
 
+// Heuristic: detect text that is mostly URL-like (not useful description text).
 function isUrlLikeText(text) {
   const cleaned = sanitizeText(text);
   if (!cleaned) return true;
@@ -84,6 +118,7 @@ function isUrlLikeText(text) {
   return words.length > 0 && urlishCount / words.length > 0.6;
 }
 
+// Heuristic: validate candidate paragraph-like description quality.
 function isLikelyDescription(text) {
   const cleaned = sanitizeText(text);
   if (!cleaned || cleaned.length < 40) return false;
@@ -99,6 +134,7 @@ function isLikelyDescription(text) {
   return words.length >= 6;
 }
 
+// Recursive extraction of best available description from nested payloads.
 function findDescriptionLikeText(input, depth = 0) {
   if (!input || depth > 4) return "";
 
@@ -141,6 +177,7 @@ function findDescriptionLikeText(input, depth = 0) {
   return "";
 }
 
+// Picks the best description field with direct priority + recursive fallback.
 function descriptionText(game) {
   const directCandidates = [
     game.template_short_description,
@@ -168,6 +205,7 @@ function descriptionText(game) {
   return "No description available.";
 }
 
+// Fetches complete game details by ID.
 async function fetchGameDetailsById(gameId) {
   if (!gameId) return null;
 
@@ -186,6 +224,7 @@ async function fetchGameDetailsById(gameId) {
   }
 }
 
+// Main render flow for details page.
 async function render() {
   const content = document.getElementById("content");
   const selected = sessionStorage.getItem("selectedGame");
@@ -247,7 +286,8 @@ async function render() {
   content.innerHTML = `
     <article class="panel">
       <div class="thumb-wrap">
-        <img class="hero" src="${image}" alt="${gameData.name || "Game"}" />
+        <img class="hero ${adult ? "adult-thumb" : ""}" src="${image}" alt="${gameData.name || "Game"}" />
+        ${adult ? '<span class="adult-badge">18+</span>' : ""}
       </div>
       <div class="body">
         <h1>${gameData.name || "Untitled Game"}</h1>
@@ -285,4 +325,6 @@ async function render() {
   `;
 }
 
+// Initialize page behavior.
+setupBackLink();
 render();
